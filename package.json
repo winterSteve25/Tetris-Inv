@@ -1,0 +1,9 @@
+{
+    "name": "com.github.wintersteve25.tetrisinv",
+    "version": "1.0.0",
+    "displayName": "Tetris Inv",
+    "unity": "6000.2",
+    "author": {
+        "name": "winterSteve25"
+    }
+}

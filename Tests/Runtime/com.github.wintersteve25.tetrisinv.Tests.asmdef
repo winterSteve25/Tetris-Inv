@@ -1,0 +1,16 @@
+{
+    "name": "com.github.wintersteve25.tetrisinv.Tests",
+    "rootNamespace": "TetrisInv",
+    "references": [
+        "GUID:ca39b565df8980849a727bb8c42ca02c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
