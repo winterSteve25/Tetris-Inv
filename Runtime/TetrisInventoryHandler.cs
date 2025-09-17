@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace TetrisInv.Runtime
 {
+    [Serializable]
     public class TetrisInventoryHandler<T> where T : ItemType
     {
         private List<IInventory<T>> _inventories = new();
