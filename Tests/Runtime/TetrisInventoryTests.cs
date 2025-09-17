@@ -195,12 +195,7 @@ namespace TetrisInv.Tests.Runtime
             }
 
             var overflowItem = new ItemStack<TestItemType>(_testItemType1X1, 1, Vector2Int.zero);
-            bool overflowTriggered = false;
-
-            _inventory.OnItemOverflow += (item) => overflowTriggered = true;
-            _inventory.AddAnywhere(overflowItem);
-
-            Assert.IsTrue(overflowTriggered);
+            Assert.IsFalse(_inventory.AddAnywhere(overflowItem));
         }
 
         #endregion
@@ -497,20 +492,5 @@ namespace TetrisInv.Tests.Runtime
         }
 
         #endregion
-    }
-
-    // Test implementation of ItemType for testing purposes
-    public class TestItemType : ItemType
-    {
-        public void Initialize(string itemName, int stackSize, Vector2Int size)
-        {
-            name = itemName;
-            // Using reflection to set private setters for testing
-            var stackSizeProperty = typeof(ItemType).GetProperty("StackSize");
-            stackSizeProperty?.SetValue(this, stackSize);
-
-            var sizeProperty = typeof(ItemType).GetProperty("Size");
-            sizeProperty?.SetValue(this, size);
-        }
     }
 }
