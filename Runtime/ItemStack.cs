@@ -9,17 +9,19 @@ namespace TetrisInv.Runtime
         public T itemType;
         public int amount;
         public Vector2Int position;
+        public int inventoryIndex;
         
-        public ItemStack(T itemType, int amount, Vector2Int position)
+        public ItemStack(T itemType, int amount, Vector2Int position, int inventoryIndex = -1)
         {
             this.itemType = itemType;
             this.amount = amount;
             this.position = position;
+            this.inventoryIndex = inventoryIndex;
         }
 
         public override string ToString()
         {
-            return $"{itemType.name} x{amount} at {position}";
+            return $"{itemType.name} x{amount} at {position} in {inventoryIndex}";
         }
     }
 }

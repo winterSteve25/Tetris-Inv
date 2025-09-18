@@ -1,6 +1,6 @@
 {
     "name": "com.github.wintersteve25.tetrisinv",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "displayName": "Tetris Inv",
     "description": "A package that simplifies the implementation of tetris inventories into your game",
     "unity": "6000.2",

@@ -7,8 +7,7 @@ namespace TetrisInv.Runtime
     [Serializable]
     public class TetrisInventoryHandler<T> where T : ItemType
     {
-        private List<TetrisInventory<T>> _inventories = new();
-
+        public List<TetrisInventory<T>> Inventories { get; private set; } = new();
         public event Action<ItemStack<T>> OnItemOverflow;
         
         /// <summary>
@@ -17,7 +16,7 @@ namespace TetrisInv.Runtime
         /// <param name="inventory">The inventory to add</param>
         public void AddInventory(TetrisInventory<T> inventory)
         {
-            _inventories.Add(inventory);
+            Inventories.Add(inventory);
         }
         
         /// <summary>
@@ -26,9 +25,9 @@ namespace TetrisInv.Runtime
         /// <param name="item">The item to be added</param>
         /// <param name="invIndex">The index of the target inventory</param>
         /// <returns>True if was fully added, false if not added or partially added - item parameter is modified to leftover amount</returns>
-        public bool AddItemAtPosition(int invIndex, ItemStack<T> item)
+        public bool AddItemAtPosition(ItemStack<T> item)
         {
-            return _inventories[invIndex].AddItemAtPosition(item);
+            return Inventories[item.inventoryIndex].AddItemAtPosition(item);
         }
         
         /// <summary>
@@ -39,9 +38,9 @@ namespace TetrisInv.Runtime
         /// <returns>The item found, null if not found</returns>
         public ItemStack<T> GetItemOfType(ItemType type, int invIndex = -1)
         {
-            if (invIndex != -1) return _inventories[invIndex].GetItemOfType(type);
+            if (invIndex != -1) return Inventories[invIndex].GetItemOfType(type);
             
-            foreach (var inv in _inventories)
+            foreach (var inv in Inventories)
             {
                 var itemOfType = inv.GetItemOfType(type);
                 if (itemOfType != null)
@@ -59,11 +58,11 @@ namespace TetrisInv.Runtime
         /// <param name="invIndex">Target inventory index, -1 to try all inventories</param>
         /// <remarks>Triggers OnItemOverflow event if overflows</remarks>
         /// <returns>True if item was successfully added</returns>
-        public bool AddAnywhere(ItemStack<T> item, int invIndex = -1)
+        public bool AddAnywhere(ItemStack<T> item)
         {
-            if (invIndex != -1)
+            if (item.inventoryIndex != -1)
             {
-                var addAnywhere = _inventories[invIndex].AddAnywhere(item);
+                var addAnywhere = Inventories[item.inventoryIndex].AddAnywhere(item);
 
                 if (!addAnywhere)
                 {
@@ -72,15 +71,17 @@ namespace TetrisInv.Runtime
                 
                 return addAnywhere;
             }
-            
-            foreach (var inv in _inventories)
+
+            for (var i = 0; i < Inventories.Count; i++)
             {
+                var inv = Inventories[i];
                 if (inv.AddAnywhere(item))
                 {
+                    item.inventoryIndex = i;
                     return true;
                 }
             }
-            
+
             OnItemOverflow?.Invoke(item);
             return false;
         }
@@ -93,8 +94,8 @@ namespace TetrisInv.Runtime
         /// <returns>The item removed, null if none was removed</returns>
         public ItemStack<T> RemoveItemOfType(ItemType type, int invIndex = -1)
         {
-            if (invIndex != -1) return _inventories[invIndex].RemoveItemOfType(type);
-            foreach (var inv in _inventories)
+            if (invIndex != -1) return Inventories[invIndex].RemoveItemOfType(type);
+            foreach (var inv in Inventories)
             {
                 var removed = inv.RemoveItemOfType(type);
                 if (removed != null) return removed;
@@ -111,7 +112,7 @@ namespace TetrisInv.Runtime
         /// <param name="amount">Amount to remove</param>
         public void RemoveAmountFromPosition(int invIndex, Vector2Int position, int amount)
         {
-            _inventories[invIndex].RemoveAmountFromPosition(position, amount);
+            Inventories[invIndex].RemoveAmountFromPosition(position, amount);
         }
         
         /// <summary>
@@ -122,7 +123,7 @@ namespace TetrisInv.Runtime
         /// <returns>Item removed, null if none was present</returns>
         public ItemStack<T> RemoveItem(int invIndex, Vector2Int position)
         {
-            return _inventories[invIndex].RemoveItem(position);
+            return Inventories[invIndex].RemoveItem(position);
         }
         
         /// <summary>
@@ -133,7 +134,7 @@ namespace TetrisInv.Runtime
         /// <param name="replaceWith">The item to replace with</param>
         public void ReplaceItem(int invIndex, Vector2Int replaceItemFromThisPosition, ItemStack<T> replaceWith)
         {
-            _inventories[invIndex].ReplaceItem(replaceItemFromThisPosition, replaceWith);
+            Inventories[invIndex].ReplaceItem(replaceItemFromThisPosition, replaceWith);
         }
         
         /// <summary>
@@ -144,7 +145,7 @@ namespace TetrisInv.Runtime
         /// <returns>The item at position, null if none exists</returns>
         public ItemStack<T> GetItemAtPosition(int invIndex, Vector2Int position)
         {
-            return _inventories[invIndex].GetItemAtPosition(position);
+            return Inventories[invIndex].GetItemAtPosition(position);
         }
     }
 }
