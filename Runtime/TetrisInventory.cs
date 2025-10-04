@@ -38,7 +38,7 @@ namespace TetrisInv.Runtime
                 if (!CanAddItemToSlot(item)) return false;
                 if (item.amount > item.itemType.StackSize)
                 {
-                    var itemStack = new ItemStack<T>(item.itemType, item.itemType.StackSize, item.position);
+                    var itemStack = item.CopyNewAmount(item.itemType.StackSize);
                     Items.Add(itemStack);
                     OnItemAdded?.Invoke(itemStack);
                     item.amount -= item.itemType.StackSize;
