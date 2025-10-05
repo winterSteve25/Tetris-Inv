@@ -20,14 +20,9 @@ namespace TetrisInv.Runtime
             this.inventoryIndex = inventoryIndex;
         }
 
-        public static ItemStack<T> CopyNewAmount(ItemStack<T> other, int amount)
+        public virtual ItemStack<T> CopyNewAmount(int amount)
         {
-            return new ItemStack<T>(other.itemType, amount, other.position, other.inventoryIndex);
-        }
-
-        public ItemStack<T> CopyNewAmount(int amount)
-        {
-            return CopyNewAmount(this, amount);
+            return new ItemStack<T>(itemType, amount, position, inventoryIndex);
         }
 
         public override string ToString()
