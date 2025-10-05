@@ -8,7 +8,7 @@ namespace TetrisInv.Runtime
     public class TetrisInventoryHandler<T> where T : ItemType
     {
         [field: SerializeField]
-        public List<TetrisInventory<T>> Inventories { get; private set; }
+        public List<TetrisInventory<T>> Inventories { get; private set; } = new();
         public event Action<ItemStack<T>> OnItemOverflow;
         
         /// <summary>
