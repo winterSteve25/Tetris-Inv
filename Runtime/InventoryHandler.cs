@@ -5,10 +5,10 @@ using UnityEngine;
 namespace TetrisInv.Runtime
 {
     [Serializable]
-    public class TetrisInventoryHandler<T> where T : ItemType
+    public class InventoryHandler<T> where T : ItemType
     {
         [field: SerializeField]
-        public List<TetrisInventory<T>> Inventories { get; private set; } = new();
+        public List<BaseInventory<T>> Inventories { get; private set; } = new();
         public event Action<ItemStack<T>> OnItemOverflow;
         
         /// <summary>
@@ -24,7 +24,6 @@ namespace TetrisInv.Runtime
         /// Tries to add item to the location specified in the ItemStack
         /// </summary>
         /// <param name="item">The item to be added</param>
-        /// <param name="invIndex">The index of the target inventory</param>
         /// <returns>True if was fully added, false if not added or partially added - item parameter is modified to leftover amount</returns>
         public bool AddItemAtPosition(ItemStack<T> item)
         {

@@ -6,23 +6,17 @@ using UnityEngine;
 namespace TetrisInv.Runtime
 {
     [Serializable]
-    public class TetrisInventory<T> where T : ItemType
+    public class TetrisInventory<T> : BaseInventory<T> where T : ItemType
     {
         [Header("Debug Info DO NOT EDIT")]
-        [field: SerializeField] public List<ItemStack<T>> Items { get; private set; }
+        [field: SerializeField] public List<ItemStack<T>> Items { get; private set; } = new();
         [field: SerializeField] public int Width { get; private set; }
         [field: SerializeField] public int Height { get; private set; }
-
-        public event Action<ItemStack<T>> OnItemAdded;
-        public event Action<ItemStack<T>> OnItemChanged;
-        public event Action<ItemStack<T>> OnItemRemoved;
-        public event Action<ItemStack<T>, ItemStack<T>> OnItemReplaced;
-
+        
         public TetrisInventory(int width, int height)
         {
             Width = width;
             Height = height;
-            Items = new List<ItemStack<T>>();
         }
 
         /// <summary>
@@ -30,7 +24,7 @@ namespace TetrisInv.Runtime
         /// </summary>
         /// <param name="item">The item to be added</param>
         /// <returns>True if was fully added, false if not added or partially added - item parameter is modified to leftover amount</returns>
-        public bool AddItemAtPosition(ItemStack<T> item)
+        public override bool AddItemAtPosition(ItemStack<T> item)
         {
             var itemAtPosition = GetItemAtPosition(item.position);
             if (itemAtPosition == null)
@@ -40,13 +34,13 @@ namespace TetrisInv.Runtime
                 {
                     var itemStack = item.CopyNewAmount(item.itemType.StackSize);
                     Items.Add(itemStack);
-                    OnItemAdded?.Invoke(itemStack);
+                    OnOnItemAdded(itemStack);
                     item.amount -= item.itemType.StackSize;
                     return false;
                 }
 
                 Items.Add(item);
-                OnItemAdded?.Invoke(item);
+                OnOnItemAdded(item);
                 return true;
             }
 
@@ -55,13 +49,13 @@ namespace TetrisInv.Runtime
                 itemAtPosition.amount += item.amount;
                 if (itemAtPosition.amount <= item.itemType.StackSize)
                 {
-                    OnItemChanged?.Invoke(itemAtPosition);
+                    OnOnItemChanged(itemAtPosition);
                     return true;
                 }
 
                 var diff = itemAtPosition.amount - item.itemType.StackSize;
                 itemAtPosition.amount = item.itemType.StackSize;
-                OnItemChanged?.Invoke(itemAtPosition);
+                OnOnItemChanged(itemAtPosition);
                 item.amount = diff;
             }
 
@@ -73,7 +67,7 @@ namespace TetrisInv.Runtime
         /// </summary>
         /// <param name="type">The wanted item type</param>
         /// <returns>The item found, null if not found</returns>
-        public ItemStack<T> GetItemOfType(ItemType type)
+        public override ItemStack<T> GetItemOfType(ItemType type)
         {
             foreach (var item in Items)
             {
@@ -93,7 +87,7 @@ namespace TetrisInv.Runtime
         /// </summary>
         /// <param name="item">The item to add</param>
         /// <returns>True if successfully added all items, false if there are left overs</returns>
-        public bool AddAnywhere(ItemStack<T> item)
+        public override bool AddAnywhere(ItemStack<T> item)
         {
             var sameItem = Items.FirstOrDefault(x => x.itemType == item.itemType && x.amount <= item.itemType.StackSize);
             if (sameItem != null && sameItem.itemType != null)
@@ -123,7 +117,7 @@ namespace TetrisInv.Runtime
         /// </summary>
         /// <param name="position">The slot to remove from</param>
         /// <param name="amount">Amount to remove</param>
-        public void RemoveAmountFromPosition(Vector2Int position, int amount)
+        public override void RemoveAmountFromPosition(Vector2Int position, int amount)
         {
             for (int i = 0; i < Items.Count; i++)
             {
@@ -136,11 +130,11 @@ namespace TetrisInv.Runtime
                 if (item.amount <= 0)
                 {
                     Items.RemoveAt(i);
-                    OnItemRemoved?.Invoke(item);
+                    OnOnItemRemoved(item);
                     return;
                 }
                 
-                OnItemChanged?.Invoke(item);
+                OnOnItemChanged(item);
                 return;
             }
         }
@@ -150,7 +144,7 @@ namespace TetrisInv.Runtime
         /// </summary>
         /// <param name="position">Location to remove from</param>
         /// <returns>Item removed, null if none was present</returns>
-        public ItemStack<T> RemoveItem(Vector2Int position)
+        public override ItemStack<T> RemoveItem(Vector2Int position)
         {
             for (int i = 0; i < Items.Count; i++)
             {
@@ -159,7 +153,7 @@ namespace TetrisInv.Runtime
 
                 var item = Items[i];
                 Items.RemoveAt(i);
-                OnItemRemoved?.Invoke(item);
+                OnOnItemRemoved(item);
                 return item;
             }
 
@@ -171,14 +165,14 @@ namespace TetrisInv.Runtime
         /// </summary>
         /// <param name="type">The item type to remove</param>
         /// <returns>The item removed, null if none was removed</returns>
-        public ItemStack<T> RemoveItemOfType(ItemType type)
+        public override ItemStack<T> RemoveItemOfType(ItemType type)
         {
             for (int i = 0; i < Items.Count; i++)
             {
                 if (Items[i].itemType != type) continue;
                 var item = Items[i];
                 Items.RemoveAt(i);
-                OnItemRemoved?.Invoke(item);
+                OnOnItemRemoved(item);
                 return item;
             }
 
@@ -190,14 +184,14 @@ namespace TetrisInv.Runtime
         /// </summary>
         /// <param name="replaceItemFromThisPosition">The position to replace</param>
         /// <param name="replaceWith">The item to replace with</param>
-        public void ReplaceItem(Vector2Int replaceItemFromThisPosition, ItemStack<T> replaceWith)
+        public override void ReplaceItem(Vector2Int replaceItemFromThisPosition, ItemStack<T> replaceWith)
         {
             for (int i = 0; i < Items.Count; i++)
             {
                 var original = Items[i];
                 if (original.position == replaceItemFromThisPosition && CanReplace(replaceWith, replaceItemFromThisPosition))
                 {
-                    OnItemReplaced?.Invoke(original, replaceWith);
+                    OnOnItemReplaced(original, replaceWith);
                     Items[i] = replaceWith;
                 }
             }
@@ -208,7 +202,7 @@ namespace TetrisInv.Runtime
         /// </summary>
         /// <param name="position">The given position</param>
         /// <returns>The item at position</returns>
-        public ItemStack<T> GetItemAtPosition(Vector2Int position)
+        public override ItemStack<T> GetItemAtPosition(Vector2Int position)
         {
             return Items.FirstOrDefault(x => Collide(x.position, x.itemType.Size, position, Vector2Int.one));
         }
