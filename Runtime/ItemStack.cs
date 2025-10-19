@@ -11,7 +11,7 @@ namespace TetrisInv.Runtime
         public int amount;
         public Vector2Int position;
         public int inventoryIndex;
-        
+
         public ItemStack(T itemType, int amount, Vector2Int position, int inventoryIndex = -1)
         {
             this.itemType = itemType;
@@ -28,6 +28,18 @@ namespace TetrisInv.Runtime
         public override string ToString()
         {
             return $"{itemType.name} x{amount} at {position} in {inventoryIndex}";
+        }
+
+        protected bool Equals(ItemStack<T> other)
+        {
+            return itemType == other.itemType && amount == other.amount &&
+                   position.Equals(other.position) && 
+                   inventoryIndex == other.inventoryIndex;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(itemType, amount, position, inventoryIndex);
         }
     }
 }
