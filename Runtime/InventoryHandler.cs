@@ -15,7 +15,7 @@ namespace TetrisInv.Runtime
         /// Adds a new inventory to the handler's managed collection
         /// </summary>
         /// <param name="inventory">The inventory to add</param>
-        public void AddInventory(TetrisInventory<T> inventory)
+        public void AddInventory(BaseInventory<T> inventory)
         {
             Inventories.Add(inventory);
         }
