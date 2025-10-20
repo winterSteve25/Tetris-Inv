@@ -189,10 +189,12 @@ namespace TetrisInv.Runtime
             for (int i = 0; i < Items.Count; i++)
             {
                 var original = Items[i];
-                if (original.position == replaceItemFromThisPosition && CanReplace(replaceWith, replaceItemFromThisPosition))
+                if (original.position == replaceItemFromThisPosition && 
+                    CanReplace(replaceWith, replaceItemFromThisPosition))
                 {
                     OnOnItemReplaced(original, replaceWith);
                     Items[i] = replaceWith;
+                    return;
                 }
             }
         }
