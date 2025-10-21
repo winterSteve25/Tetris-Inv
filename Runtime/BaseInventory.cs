@@ -42,6 +42,11 @@ namespace TetrisInv.Runtime
             throw new NotImplementedException();
         }
 
+        public virtual ItemStack<T> RemoveItemOfType(ItemType type, int amount)
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void ReplaceItem(Vector2Int replaceItemFromThisPosition, ItemStack<T> replaceWith)
         {
             throw new NotImplementedException();

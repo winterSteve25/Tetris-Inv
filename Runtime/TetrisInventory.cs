@@ -10,9 +10,10 @@ namespace TetrisInv.Runtime
     {
         [Header("Debug Info DO NOT EDIT")]
         [field: SerializeField] public List<ItemStack<T>> Items { get; private set; } = new();
+
         [field: SerializeField] public int Width { get; private set; }
         [field: SerializeField] public int Height { get; private set; }
-        
+
         public TetrisInventory(int width, int height)
         {
             Width = width;
@@ -61,7 +62,7 @@ namespace TetrisInv.Runtime
 
             return false;
         }
-        
+
         /// <summary>
         /// Produces the first item found in the inventory of a given type not necessarily the first in order of items on the grid
         /// </summary>
@@ -89,7 +90,8 @@ namespace TetrisInv.Runtime
         /// <returns>True if successfully added all items, false if there are left overs</returns>
         public override bool AddAnywhere(ItemStack<T> item)
         {
-            var sameItem = Items.FirstOrDefault(x => x.itemType == item.itemType && x.amount <= item.itemType.StackSize);
+            var sameItem =
+                Items.FirstOrDefault(x => x.itemType == item.itemType && x.amount <= item.itemType.StackSize);
             if (sameItem != null && sameItem.itemType != null)
             {
                 item.position = sameItem.position;
@@ -126,19 +128,19 @@ namespace TetrisInv.Runtime
 
                 var item = Items[i];
                 item.amount -= amount;
-                
+
                 if (item.amount <= 0)
                 {
                     Items.RemoveAt(i);
                     OnOnItemRemoved(item);
                     return;
                 }
-                
+
                 OnOnItemChanged(item);
                 return;
             }
         }
-        
+
         /// <summary>
         /// Removes the item at given location
         /// </summary>
@@ -179,6 +181,29 @@ namespace TetrisInv.Runtime
             return null;
         }
 
+        public override ItemStack<T> RemoveItemOfType(ItemType type, int amount)
+        {
+            for (int i = 0; i < Items.Count; i++)
+            {
+                if (Items[i].itemType != type) continue;
+                
+                var item = Items[i];
+                item.amount -= amount;
+
+                if (item.amount <= 0)
+                {
+                    Items.RemoveAt(i);
+                    OnOnItemRemoved(item);
+                    return item;
+                }
+
+                OnOnItemChanged(item);
+                return item;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Replaces the item at the given strict position (top left) with the given item
         /// </summary>
@@ -189,7 +214,7 @@ namespace TetrisInv.Runtime
             for (int i = 0; i < Items.Count; i++)
             {
                 var original = Items[i];
-                if (original.position == replaceItemFromThisPosition && 
+                if (original.position == replaceItemFromThisPosition &&
                     CanReplace(replaceWith, replaceItemFromThisPosition))
                 {
                     OnOnItemReplaced(original, replaceWith);

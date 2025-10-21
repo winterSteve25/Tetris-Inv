@@ -130,6 +130,29 @@ namespace TetrisInv.Runtime
 
             return null;
         }
+        
+        public override ItemStack<T> RemoveItemOfType(ItemType type, int amount)
+        {
+            for (var i = 0; i < Items.Length; i++)
+            {
+                if (Items[i].itemType != type) continue;
+                
+                var item = Items[i];
+                item.amount -= amount;
+
+                if (item.amount <= 0)
+                {
+                    Items[i] = null;
+                    OnOnItemRemoved(item);
+                    return item;
+                }
+
+                OnOnItemChanged(item);
+                return item;
+            }
+
+            return null;
+        }
 
         public override void ReplaceItem(Vector2Int replaceItemFromThisPosition, ItemStack<T> replaceWith)
         {

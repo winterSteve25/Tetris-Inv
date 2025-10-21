@@ -9,8 +9,9 @@ namespace TetrisInv.Runtime
     {
         [field: SerializeReference]
         public List<BaseInventory<T>> Inventories { get; private set; } = new();
+
         public event Action<ItemStack<T>> OnItemOverflow;
-        
+
         /// <summary>
         /// Adds a new inventory to the handler's managed collection
         /// </summary>
@@ -19,7 +20,7 @@ namespace TetrisInv.Runtime
         {
             Inventories.Add(inventory);
         }
-        
+
         /// <summary>
         /// Tries to add item to the location specified in the ItemStack
         /// </summary>
@@ -29,7 +30,7 @@ namespace TetrisInv.Runtime
         {
             return Inventories[item.inventoryIndex].AddItemAtPosition(item);
         }
-        
+
         /// <summary>
         /// Produces the first item found of a given type
         /// </summary>
@@ -39,7 +40,7 @@ namespace TetrisInv.Runtime
         public ItemStack<T> GetItemOfType(ItemType type, int invIndex = -1)
         {
             if (invIndex != -1) return Inventories[invIndex].GetItemOfType(type);
-            
+
             foreach (var inv in Inventories)
             {
                 var itemOfType = inv.GetItemOfType(type);
@@ -48,9 +49,10 @@ namespace TetrisInv.Runtime
                     return itemOfType;
                 }
             }
+
             return null;
         }
-        
+
         /// <summary>
         /// Adds a given item anywhere in the inventory
         /// </summary>
@@ -68,7 +70,7 @@ namespace TetrisInv.Runtime
                 {
                     OnItemOverflow?.Invoke(item);
                 }
-                
+
                 return addAnywhere;
             }
 
@@ -85,25 +87,26 @@ namespace TetrisInv.Runtime
             OnItemOverflow?.Invoke(item);
             return false;
         }
-        
+
         /// <summary>
         /// Removes the first item of type
         /// </summary>
         /// <param name="type">The item type to remove</param>
+        /// <param name="amount">Amount to remove</param>
         /// <param name="invIndex">Target inventory index, -1 to search all inventories</param>
         /// <returns>The item removed, null if none was removed</returns>
-        public ItemStack<T> RemoveItemOfType(ItemType type, int invIndex = -1)
+        public ItemStack<T> RemoveItemOfType(ItemType type, int amount, int invIndex = -1)
         {
             if (invIndex != -1) return Inventories[invIndex].RemoveItemOfType(type);
             foreach (var inv in Inventories)
             {
-                var removed = inv.RemoveItemOfType(type);
+                var removed = inv.RemoveItemOfType(type, amount);
                 if (removed != null) return removed;
             }
-            
+
             return null;
         }
-        
+
         /// <summary>
         /// Removes a certain amount of items from a given slot
         /// </summary>
@@ -114,7 +117,7 @@ namespace TetrisInv.Runtime
         {
             Inventories[invIndex].RemoveAmountFromPosition(position, amount);
         }
-        
+
         /// <summary>
         /// Removes the item at given location
         /// </summary>
@@ -125,7 +128,7 @@ namespace TetrisInv.Runtime
         {
             return Inventories[invIndex].RemoveItem(position);
         }
-        
+
         /// <summary>
         /// Replaces the item at the given position with the given item
         /// </summary>
@@ -136,7 +139,7 @@ namespace TetrisInv.Runtime
         {
             Inventories[invIndex].ReplaceItem(replaceItemFromThisPosition, replaceWith);
         }
-        
+
         /// <summary>
         /// Gets the item at the given position
         /// </summary>
